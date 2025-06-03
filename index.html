@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Реєстрація майстра</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    form {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    .checkbox-group {
+      margin-bottom: 16px;
+    }
+    .checkbox-group label {
+      display: block;
+      font-weight: normal;
+      margin-bottom: 4px;
+    }
+    .telegram-button {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <form id="registerForm">
+    <label for="name">ПІБ*</label>
+    <input type="text" name="name" id="name" required />
+
+    <label for="telegram">Telegram*</label>
+    <input type="text" name="telegram" id="telegram" required placeholder="@username або номер" />
+
+    <label for="city">Місто*</label>
+    <input type="text" name="city" id="city" required />
+
+    <label for="district">Район</label>
+    <input type="text" name="district" id="district" />
+
+    <label>Категорії послуг*</label>
+    <div class="checkbox-group" id="categories">
+      <label><input type="checkbox" value="Побутові послуги" /> Побутові послуги</label>
+      <label><input type="checkbox" value="Ремонт та будівництво" /> Ремонт та будівництво</label>
+      <label><input type="checkbox" value="Техніка та електроніка" /> Техніка та електроніка</label>
+      <label><input type="checkbox" value="Авто" /> Авто</label>
+      <label><input type="checkbox" value="Краса і здоров'я" /> Краса і здоров'я</label>
+      <label><input type="checkbox" value="Освіта і репетитори" /> Освіта і репетитори</label>
+      <label><input type="checkbox" value="ІТ та фриланс" /> ІТ та фриланс</label>
+      <label><input type="checkbox" value="Кур'єрські послуги" /> Кур'єрські послуги</label>
+      <label><input type="checkbox" value="Тварини" /> Тварини</label>
+      <label><input type="checkbox" value="Інше" /> Інше</label>
+    </div>
+
+    <label for="portfolio">Портфоліо (посилання)</label>
+    <input type="url" name="portfolio" id="portfolio" placeholder="https://..." />
+
+    <label for="about">Про себе</label>
+    <textarea name="about" id="about" rows="4" placeholder="Кілька слів про себе..."></textarea>
+  </form>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.MainButton.setText("Надіслати заявку");
+    tg.MainButton.show();
+
+    const form = document.getElementById("registerForm");
+
+    // Автозаповнення telegram-поля
+    window.addEventListener("DOMContentLoaded", () => {
+      if (tg.initDataUnsafe?.user?.username) {
+        document.getElementById("telegram").value = "@" + tg.initDataUnsafe.user.username;
+      }
+    });
+
+    tg.MainButton.onClick(() => {
+      const formData = new FormData(form);
+      const data = {
+        name: formData.get("name"),
+        telegram: formData.get("telegram"),
+        city: formData.get("city"),
+        district: formData.get("district"),
+        categories: Array.from(document.querySelectorAll("#categories input:checked")).map(cb => cb.value),
+        portfolio: formData.get("portfolio"),
+        about: formData.get("about")
+      };
+
+      // Валідація
+      if (!data.name  !data.telegram  !data.city || data.categories.length === 0) {
+        alert("Будь ласка, заповніть усі обов'язкові поля");
+        return;
+      }
+// Відправити в Make Webhook 
+      fetch("https://hook.eu2.make.com/3d337ofryfjim4gesefoxuedlg7af3he", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+      .then(() => {
+        tg.MainButton.setText("Заявку надіслано ✅");
+        tg.MainButton.hide();
+        tg.close();
+      })
+      .catch(() => {
+        alert("Помилка надсилання. Спробуйте ще раз.");
+      });
+    });
+  </script>
+</body>
+</html>
