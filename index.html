@@ -54,42 +54,44 @@
       background-color: #0077b3;
     }
   </style>
-  <script>
-    function handleSubmit(e) {
-      e.preventDefault();
-      const data = {
-        pib: document.getElementById('pib').value,
-        telegram: document.getElementById('telegram').value,
-        city: document.getElementById('city').value,
-        region: document.getElementById('region').value,
-        categories: Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb => cb.value),
-        portfolio: document.getElementById('portfolio').value,
-        about: document.getElementById('about').value
-      };
+ <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.expand();
 
-      if (window.Telegram.WebApp) {
-        fetch('https://hook.eu2.make.com/8e5shj26hnr6ssgghwib939o5ybu4znt', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(data)
-})
-.then(() => {
-  alert("Дані надіслано. Ви можете закрити це вікно.");
-  if (Telegram.WebApp) Telegram.WebApp.close();
-})
-.catch(err => {
-  alert("Сталася помилка. Спробуйте ще раз.");
-  console.error(err);
-});
+  function handleSubmit(e) {
+    e.preventDefault();
 
-      } else {
-        alert("Telegram WebApp недоступний. Перевірте, чи відкрито форму в Telegram.");
-        console.log(data);
-      }
-    }
-  </script>
+    const userId = tg?.initDataUnsafe?.user?.id || null;
+
+    const data = {
+      userId: userId,
+      pib: document.getElementById('pib').value,
+      telegram: document.getElementById('telegram').value,
+      city: document.getElementById('city').value,
+      region: document.getElementById('region').value,
+      categories: Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb => cb.value),
+      portfolio: document.getElementById('portfolio').value,
+      about: document.getElementById('about').value
+    };
+
+    fetch('https://hook.eu2.make.com/8e5shj26hnr6ssgghwib939o5ybu4znt', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(() => {
+      alert("✅ Дані надіслано. Ви можете закрити це вікно.");
+      tg.close();
+    })
+    .catch(err => {
+      alert("❌ Сталася помилка. Спробуйте ще раз.");
+      console.error(err);
+    });
+  }
+</script>
 </head>
 <body>
   <h2>Реєстрація майстра</h2>
