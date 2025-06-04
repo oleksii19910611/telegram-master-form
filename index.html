@@ -18,31 +18,40 @@
     }
     label {
       font-weight: bold;
+      display: block;
+      margin-bottom: 6px;
     }
-    input, select, textarea {
+    input[type="text"],
+    input[type="url"],
+    textarea {
       width: 100%;
-      padding: 8px;
-      margin: 5px 0 15px;
+      padding: 10px;
+      margin-bottom: 16px;
       border: 1px solid #ccc;
       border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .checkbox-group {
+      margin-bottom: 16px;
+    }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
     }
     button {
-      padding: 10px 15px;
+      padding: 12px;
       background-color: #0088cc;
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
       width: 100%;
+      font-size: 16px;
     }
     button:hover {
       background-color: #0077b3;
-    }
-    .checkbox-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
     }
   </style>
   <script>
@@ -59,12 +68,25 @@
       };
 
       if (window.Telegram.WebApp) {
-        Telegram.WebApp.sendData(JSON.stringify(data));
-        Telegram.WebApp.close();
+        fetch('https://hook.eu2.make.com/8e5shj26hnr6ssgghwib939o5ybu4znt', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(data)
+})
+.then(() => {
+  alert("Дані надіслано. Ви можете закрити це вікно.");
+  if (Telegram.WebApp) Telegram.WebApp.close();
+})
+.catch(err => {
+  alert("Сталася помилка. Спробуйте ще раз.");
+  console.error(err);
+});
+
       } else {
-        console.log("Telegram WebApp API недоступний. Вивід даних у консоль:");
+        alert("Telegram WebApp недоступний. Перевірте, чи відкрито форму в Telegram.");
         console.log(data);
-        alert('Дані зібрано. Перевір консоль.');
       }
     }
   </script>
@@ -84,17 +106,19 @@
     <label for="region">Район</label>
     <input type="text" id="region">
 
-    <label>Категорії послуг*</label><br>
-    <label class="checkbox-label"><input type="checkbox" name="category" value="Побутові послуги"> Побутові послуги</label>
-    <label class="checkbox-label"><input type="checkbox" name="category" value="Ремонт та будівництво"> Ремонт та будівництво</label>
-    <label class="checkbox-label"><input type="checkbox" name="category" value="Техніка та електроніка"> Техніка та електроніка</label>
-    <label class="checkbox-label"><input type="checkbox" name="category" value="Авто"> Авто</label>
-    <label class="checkbox-label"><input type="checkbox" name="category" value="Краса і здоров'я"> Краса і здоров'я</label>
-    <label class="checkbox-label"><input type="checkbox" name="category" value="Освіта і репетитори"> Освіта і репетитори</label>
-    <label class="checkbox-label"><input type="checkbox" name="category" value="ІТ та фриланс"> ІТ та фриланс</label>
-    <label class="checkbox-label"><input type="checkbox" name="category" value="Кур'єрські послуги"> Кур'єрські послуги</label>
-    <label class="checkbox-label"><input type="checkbox" name="category" value="Тварини"> Тварини</label>
-    <label class="checkbox-label"><input type="checkbox" name="category" value="Інше"> Інше</label><br>
+    <label>Категорії послуг*</label>
+    <div class="checkbox-group">
+      <label class="checkbox-label"><input type="checkbox" name="category" value="Побутові послуги"> Побутові послуги</label>
+      <label class="checkbox-label"><input type="checkbox" name="category" value="Ремонт та будівництво"> Ремонт та будівництво</label>
+      <label class="checkbox-label"><input type="checkbox" name="category" value="Техніка та електроніка"> Техніка та електроніка</label>
+      <label class="checkbox-label"><input type="checkbox" name="category" value="Авто"> Авто</label>
+      <label class="checkbox-label"><input type="checkbox" name="category" value="Краса і здоров'я"> Краса і здоров'я</label>
+      <label class="checkbox-label"><input type="checkbox" name="category" value="Освіта і репетитори"> Освіта і репетитори</label>
+      <label class="checkbox-label"><input type="checkbox" name="category" value="ІТ та фриланс"> ІТ та фриланс</label>
+      <label class="checkbox-label"><input type="checkbox" name="category" value="Кур'єрські послуги"> Кур'єрські послуги</label>
+      <label class="checkbox-label"><input type="checkbox" name="category" value="Тварини"> Тварини</label>
+      <label class="checkbox-label"><input type="checkbox" name="category" value="Інше"> Інше</label>
+    </div>
 
     <label for="portfolio">Портфоліо (Посилання)</label>
     <input type="url" id="portfolio">
