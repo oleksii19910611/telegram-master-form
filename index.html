@@ -72,6 +72,8 @@
     .then((res) => res.json())
     .then((data) => {
       if (data.exists) {
+        console.log("Категорії з Make:", data.categories);
+        
         document.getElementById("pib").value = data.name || "";
         document.getElementById("telegram").value = data.telegram || "";
         document.getElementById("city").value = data.city || "";
