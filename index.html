@@ -58,6 +58,41 @@
 <script>
   const tg = window.Telegram.WebApp;
   tg.expand();
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.expand();
+
+  const userId = tg?.initDataUnsafe?.user?.id || null;
+
+  // 1. Автозаповнення форми
+  fetch("https://hook.eu2.make.com/d0hwtp4ff6ablskkbzdmsdf8rbk5yplt", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ telegram_id: userId })
+  })
+  .then((res) => res.json())
+  .then((data) => {
+    if (data.exists) {
+      document.getElementById("pib").value = data.name || "";
+      document.getElementById("telegram").value = data.telegram || "";
+      document.getElementById("city").value = data.city || "";
+      document.getElementById("region").value = data.region || "";
+      document.getElementById("portfolio").value = data.portfolio || "";
+      document.getElementById("about").value = data.about || "";
+
+      if (data.categories && Array.isArray(data.categories)) {
+        data.categories.forEach((cat) => {
+          const checkbox = document.querySelector(`input[name="category"][value="${cat}"]`);
+          if (checkbox) checkbox.checked = true;
+        });
+      }
+
+      document.querySelector("button[type=submit]").textContent = "Зберегти зміни";
+    }
+  });
+</script>
 
   function handleSubmit(e) {
     e.preventDefault();
