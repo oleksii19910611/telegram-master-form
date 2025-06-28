@@ -81,12 +81,17 @@
         document.getElementById("portfolio").value = data.portfolio || "";
         document.getElementById("about").value = data.about || "";
 
-        if (data.categories && Array.isArray(data.categories)) {
-          data.categories.forEach((cat) => {
-            const checkbox = document.querySelector(`input[name="category"][value="${cat}"]`);
-            if (checkbox) checkbox.checked = true;
-          });
-        }
+        if (data.categories) {
+  let categories = Array.isArray(data.categories)
+    ? data.categories
+    : data.categories.split(',').map(c => c.trim());
+
+  categories.forEach((cat) => {
+    const checkbox = document.querySelector(`input[name="category"][value="${cat}"]`);
+    if (checkbox) checkbox.checked = true;
+  });
+}
+
 
         document.querySelector("button[type=submit]").textContent = "Зберегти зміни";
       }
